@@ -37,6 +37,7 @@ public class ChessBoard {
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
      */
+    //made a note for checkpoint
     public void resetBoard() {
         throw new RuntimeException("Not implemented");
     }
