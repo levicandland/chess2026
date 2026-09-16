@@ -1,6 +1,8 @@
 package chess;
 
 import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a single chess piece
@@ -10,7 +12,39 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
+    private final ChessGame.TeamColor pieceColor;
+    private final ChessPiece.PieceType type;
+
+    //knight helper function
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition){
+
+        Collection<ChessMove> moves = new ArrayList<>();
+        int [][] knightOffsets = {{1,2}, {1,-2}, {-1,2}, {-1,-2}, {2,1}, {2,-1}, {-2,1}, {-2,-1}};
+
+        for (int[] offset : knightOffsets) {
+
+            int candidateRow = offset[0] + myPosition.getRow();
+            int candidateColumn = offset[1] + myPosition.getColumn();
+
+            if ((candidateRow >= 1 && candidateRow <= 8) && (candidateColumn >= 1 && candidateColumn <= 8)) {
+
+                ChessPosition candidateSquare = new ChessPosition(candidateRow, candidateColumn);
+                ChessPiece piece = board.getPiece(candidateSquare);
+
+                if ((piece == null) || (piece.getTeamColor() != this.getTeamColor())) {
+
+                    ChessMove moveKnight = new ChessMove(myPosition, candidateSquare, null);
+                    moves.add(moveKnight);
+                }
+            }
+        }
+
+        return moves;
+    }
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.pieceColor = pieceColor;
+        this.type = type;
     }
 
     /**
@@ -29,14 +63,14 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return pieceColor;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return type;
     }
 
     /**
