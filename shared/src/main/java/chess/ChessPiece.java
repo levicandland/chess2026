@@ -42,6 +42,33 @@ public class ChessPiece {
         return moves;
     }
 
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition){
+
+        Collection<ChessMove> moves = new ArrayList<>();
+        int [][] kingOffsets = {{1,1}, {1,-1}, {-1,1}, {-1,-1}, {0,1}, {0,-1}, {-1,0}, {1,0}};
+
+        for (int[] offset : kingOffsets) {
+
+            int candidateRow = offset[0] + myPosition.getRow();
+            int candidateColumn = offset[1] + myPosition.getColumn();
+
+            if ((candidateRow >= 1 && candidateRow <= 8) && (candidateColumn >= 1 && candidateColumn <= 8)) {
+
+                ChessPosition candidateSquare = new ChessPosition(candidateRow, candidateColumn);
+                ChessPiece piece = board.getPiece(candidateSquare);
+
+                if ((piece == null) || (piece.getTeamColor() != this.getTeamColor())) {
+
+                    ChessMove moveKing = new ChessMove(myPosition, candidateSquare, null);
+                    moves.add(moveKing);
+                }
+            }
+        }
+
+        return moves;
+    }
+
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
@@ -83,7 +110,7 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         switch (getPieceType()){
             case KING:
-                throw new RuntimeException("Not implemented");
+                return kingMoves(board, myPosition);
             case QUEEN:
                 throw new RuntimeException("Not implemented");
             case BISHOP:
