@@ -68,6 +68,39 @@ public class ChessPiece {
         return moves;
     }
 
+    private Collection<ChessMove> slidingMoves(ChessBoard board, ChessPosition myPosition, int [][] directions){
+        Collection<ChessMove> moves = new ArrayList<>();
+        for (int [] direction : directions) {
+            int currentRow = myPosition.getRow();
+            int currentColumn = myPosition.getColumn();
+            while (true) {
+                currentRow += direction[0];
+                currentColumn += direction[1];
+
+                if (!(currentRow >= 1 && currentRow <= 8) || !(currentColumn >= 1 && currentColumn <= 8)) {
+                    break;
+                }
+
+                ChessPosition currentSquare = new ChessPosition(currentRow, currentColumn);
+                ChessPiece occupant = board.getPiece(currentSquare);
+
+                if (occupant == null){
+                    ChessMove slide = new ChessMove(myPosition, currentSquare, null);
+                    moves.add(slide);
+                    continue;
+                }
+                else if (occupant.getTeamColor() != this.getTeamColor()){
+                    ChessMove slide = new ChessMove(myPosition, currentSquare, null);
+                    moves.add(slide);
+                    break;
+                }
+                else {
+                    break;
+                }
+            }
+        }
+        return moves;
+    }
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
