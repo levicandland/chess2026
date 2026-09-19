@@ -1,8 +1,6 @@
 package chess;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -10,6 +8,20 @@ import java.util.HashMap;
  * signature of the existing methods.
  */
 public class ChessBoard {
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessBoard that = (ChessBoard) o;
+        return Objects.equals(pieceAtPosition, that.pieceAtPosition);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(pieceAtPosition);
+    }
 
     private final Map<ChessPosition, ChessPiece> pieceAtPosition = new HashMap<>();
 
