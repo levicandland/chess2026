@@ -102,6 +102,11 @@ public class ChessPiece {
         return moves;
     }
 
+    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition){
+        int [][] rookDirections = {{0,1}, {0,-1}, {1,0}, {-1,0}};
+        return slidingMoves(board, myPosition, rookDirections);
+    }
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
@@ -151,7 +156,7 @@ public class ChessPiece {
             case KNIGHT:
                 return knightMoves(board, myPosition);
             case ROOK:
-                throw new RuntimeException("Not implemented");
+                return rookMoves(board, myPosition);
             case PAWN:
                 throw new RuntimeException("Not implemented");
             default:
