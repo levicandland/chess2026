@@ -112,6 +112,11 @@ public class ChessPiece {
         return slidingMoves(board, myPosition, bishopDirections);
     }
 
+    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition){
+        int [][] queenDirections = {{0,1}, {0,-1}, {1,0}, {-1,0}, {1,1}, {1,-1}, {-1,1}, {-1,-1}};
+        return slidingMoves(board, myPosition, queenDirections);
+    }
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
@@ -155,7 +160,7 @@ public class ChessPiece {
             case KING:
                 return kingMoves(board, myPosition);
             case QUEEN:
-                throw new RuntimeException("Not implemented");
+                return queenMoves(board, myPosition);
             case BISHOP:
                 return bishopMoves(board, myPosition);
             case KNIGHT:
