@@ -117,6 +117,88 @@ public class ChessPiece {
         return slidingMoves(board, myPosition, queenDirections);
     }
 
+    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>();
+        //declare variables for pawns
+        int direction;
+        int startingRow;
+        int promotionRow;
+        //initialize respective variables for WHITE and BLACK pawns
+        if(this.getTeamColor() == ChessGame.TeamColor.WHITE){
+            direction = 1;
+            startingRow = 2;
+            promotionRow = 8;
+
+        }
+        else{
+            direction = -1;
+            startingRow = 7;
+            promotionRow = 1;
+        }
+
+        //declare needed variables for one-step
+        int oneStepRow = myPosition.getRow() + direction;
+        ChessPosition oneStepSquare = new ChessPosition(oneStepRow, myPosition.getColumn());
+        ChessPiece occupantForwardOne = board.getPiece(oneStepSquare);
+
+        //declare needed variables for two-step
+        int twoStepRow = myPosition.getRow() + (direction * 2);
+        ChessPosition twoStepSquare = new ChessPosition(twoStepRow, myPosition.getColumn());
+        ChessPiece occupantForwardTwo = board.getPiece(twoStepSquare);
+
+        //declare needed variables for diagonal capture
+        int [] [] pawnOffSets = {{direction, 1}, {direction, -1}};
+
+        //if nothing in first square
+        if (occupantForwardOne == null) {
+            //check promotion
+            checkAddPromotions(moves, myPosition, oneStepSquare, promotionRow);
+            //check double step
+            if (myPosition.getRow() == startingRow) {
+                if (occupantForwardTwo == null) {
+                    ChessMove pawnTwoStep = new ChessMove(myPosition, twoStepSquare, null);
+                    moves.add(pawnTwoStep);
+                }
+            }
+        }
+
+        //diagonal pawn capture
+        for (int[] offSet : pawnOffSets) {
+
+            int candidateRow = offSet[0] + myPosition.getRow();
+            int candidateColumn = offSet[1] + myPosition.getColumn();
+
+            if ((candidateRow >= 1 && candidateRow <= 8) && (candidateColumn >= 1 && candidateColumn <= 8)) {
+
+                ChessPosition candidateSquare = new ChessPosition(candidateRow, candidateColumn);
+                ChessPiece piece = board.getPiece(candidateSquare);
+
+                if ((piece != null) && (piece.getTeamColor() != this.getTeamColor())) {
+
+                    checkAddPromotions(moves, myPosition, candidateSquare, promotionRow);
+                }
+            }
+        }
+
+        return moves;
+
+    }
+
+    private void checkAddPromotions (Collection<ChessMove> moves, ChessPosition start, ChessPosition end, int promotionRow) {
+        if (end.getRow() == promotionRow) {
+            ChessPiece.PieceType[] pawnPromotionPieces = {ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN};
+            //promotion
+            for (ChessPiece.PieceType promoPiece : pawnPromotionPieces ) {
+                ChessMove pawnPromotion = new ChessMove(start, end, promoPiece);
+                moves.add(pawnPromotion);
+            }
+        }
+        else {
+            ChessMove normalPawnMove = new ChessMove(start, end, null);
+            moves.add(normalPawnMove);
+        }
+    }
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
@@ -168,7 +250,7 @@ public class ChessPiece {
             case ROOK:
                 return rookMoves(board, myPosition);
             case PAWN:
-                throw new RuntimeException("Not implemented");
+                return pawnMoves(board, myPosition);
             default:
                 throw new RuntimeException("Not implemented");
         }
