@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  * A class that can manage a chess game, making moves on a board
@@ -9,7 +10,7 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
-    private boolean isInCheckAndValidMovesHelper(TeamColor teamColor, ChessBoard boardSub) {
+    private boolean isInCheckHelper(TeamColor teamColor, ChessBoard boardSub) {
         //check if king is found
         ChessPosition kingFound = findKing(teamColor, boardSub);
         if (kingFound == null){
@@ -102,7 +103,29 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        //Is there a piece
+        ChessPiece occupant = board.getPiece(startPosition);
+        if (occupant == null) {
+            return null;
+        }
+        //Collect pieces moves
+        Collection<ChessMove> possibleMoves = occupant.pieceMoves(board, startPosition);
+        //Collect valid moves
+        Collection<ChessMove> legalMoves = new ArrayList <> ();
+        //for each move
+        for (ChessMove move : possibleMoves ) {
+            //make a copy board to analyse that move
+            ChessBoard testBoard = copyBoard(board);
+            //start test
+            //vacate startPosition
+            testBoard.addPiece(move.getStartPosition(), null);
+            //occupy endPosition
+            testBoard.addPiece(move.getEndPosition(), occupant);
+            if (!(isInCheckHelper(occupant.getTeamColor(), testBoard))) {
+                legalMoves.add(move);
+            }
+        }
+        return legalMoves;
     }
 
     /**
@@ -122,7 +145,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        return isInCheckAndValidMovesHelper(teamColor, board);
+        return isInCheckHelper(teamColor, board);
     }
 
     /**
