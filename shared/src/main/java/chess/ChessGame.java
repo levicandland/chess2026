@@ -10,6 +10,18 @@ import java.util.Collection;
  */
 public class ChessGame {
 
+    private ChessBoard copyBoard (ChessBoard original) {
+        ChessBoard boardCopy = new ChessBoard();
+        for (int row = 1; row <= 8; row ++){
+            for (int col = 1; col <= 8; col ++){
+                ChessPosition curSqr = new ChessPosition(row, col);
+                ChessPiece occupant = original.getPiece(curSqr);
+                boardCopy.addPiece(curSqr, occupant);
+            }
+        }
+        return boardCopy;
+    }
+
     private ChessPosition findKing (TeamColor teamColor){
         for (int row = 1; row <= 8; row ++){
             for (int col = 1; col <= 8; col ++){
