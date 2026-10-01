@@ -9,6 +9,29 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
+    private boolean isInCheckAndValidMovesHelper(TeamColor teamColor, ChessBoard boardSub) {
+        //check if king is found
+        ChessPosition kingFound = findKing(teamColor, boardSub);
+        if (kingFound == null){
+            return false;
+        }
+        //can enemy attack?
+        for (int row = 1; row <= 8; row ++){
+            for (int col = 1; col <= 8; col ++){
+                ChessPosition canKingEnemy = new ChessPosition(row, col);
+                ChessPiece occupant = boardSub.getPiece(canKingEnemy);
+                if ((occupant != null) && (occupant.getTeamColor() != teamColor)){
+                    Collection<ChessMove> enemyKingThreats = occupant.pieceMoves(boardSub, canKingEnemy);
+                    for (ChessMove threat : enemyKingThreats){
+                        if (threat.getEndPosition().equals(kingFound)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     private ChessBoard copyBoard (ChessBoard original) {
         //make a board
@@ -24,11 +47,11 @@ public class ChessGame {
         return boardCopy;
     }
 
-    private ChessPosition findKing (TeamColor teamColor){
+    private ChessPosition findKing (TeamColor teamColor, ChessBoard boardSub){
         for (int row = 1; row <= 8; row ++){
             for (int col = 1; col <= 8; col ++){
                 ChessPosition canKing = new ChessPosition(row, col);
-                ChessPiece occupant = board.getPiece(canKing);
+                ChessPiece occupant = boardSub.getPiece(canKing);
                 if ((occupant != null) && (occupant.getPieceType() == ChessPiece.PieceType.KING) && (occupant.getTeamColor() == teamColor)){
                     return canKing;
                 }
@@ -99,27 +122,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        //check if king is found
-        ChessPosition kingFound = findKing(teamColor);
-        if (kingFound == null){
-            return false;
-        }
-        //can enemy attack?
-        for (int row = 1; row <= 8; row ++){
-            for (int col = 1; col <= 8; col ++){
-                ChessPosition canKingEnemy = new ChessPosition(row, col);
-                ChessPiece occupant = board.getPiece(canKingEnemy);
-                if ((occupant != null) && (occupant.getTeamColor() != teamColor)){
-                    Collection<ChessMove> enemyKingThreats = occupant.pieceMoves(board, canKingEnemy);
-                    for (ChessMove threat : enemyKingThreats){
-                        if (threat.getEndPosition().equals(kingFound)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
+        return isInCheckAndValidMovesHelper(teamColor, board);
     }
 
     /**
