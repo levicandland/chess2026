@@ -36,7 +36,12 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        pieceAtPosition.put(position,piece);
+        if (piece == null) {
+            pieceAtPosition.remove(position);
+        }
+        else {
+            pieceAtPosition.put(position, piece);
+        }
     }
     /**
      * Gets a chess piece on the chessboard
