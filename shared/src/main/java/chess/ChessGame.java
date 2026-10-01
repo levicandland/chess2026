@@ -10,6 +10,19 @@ import java.util.Collection;
  */
 public class ChessGame {
 
+    private ChessPosition findKing (TeamColor teamColor){
+        for (int row = 1; row <= 8; row ++){
+            for (int col = 1; col <= 8; col ++){
+                ChessPosition canKing = new ChessPosition(row, col);
+                ChessPiece occupant = board.getPiece(canKing);
+                if ((occupant != null) && (occupant.getPieceType() == ChessPiece.PieceType.KING) && (occupant.getTeamColor() == teamColor)){
+                    return canKing;
+                }
+            }
+        }
+        return null;
+    }
+
     private TeamColor teamTurn;
     private ChessBoard board;
 
@@ -72,7 +85,27 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //check if king is found
+        ChessPosition kingFound = findKing(teamColor);
+        if (kingFound == null){
+            return false;
+        }
+        //can enemy attack?
+        for (int row = 1; row <= 8; row ++){
+            for (int col = 1; col <= 8; col ++){
+                ChessPosition canKingEnemy = new ChessPosition(row, col);
+                ChessPiece occupant = board.getPiece(canKingEnemy);
+                if ((occupant != null) && (occupant.getTeamColor() != teamColor)){
+                    Collection<ChessMove> enemyKingThreats = occupant.pieceMoves(board, canKingEnemy);
+                    for (ChessMove threat : enemyKingThreats){
+                        if (threat.getEndPosition().equals(kingFound)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
