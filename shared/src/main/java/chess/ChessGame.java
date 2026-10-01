@@ -10,6 +10,22 @@ import java.util.ArrayList;
  * signature of the existing methods.
  */
 public class ChessGame {
+
+    private boolean hasValidMoves (ChessGame.TeamColor teamColor){
+        for (int row = 1; row <= 8; row ++){
+            for (int col = 1; col <= 8; col ++){
+                ChessPosition curSqr = new ChessPosition(row, col);
+                ChessPiece occupant = board.getPiece(curSqr);
+                if ((occupant != null) && (occupant.getTeamColor().equals(teamColor))) {
+                    if (!(validMoves(curSqr).isEmpty())){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private boolean isInCheckHelper(TeamColor teamColor, ChessBoard boardSub) {
         //check if king is found
         ChessPosition kingFound = findKing(teamColor, boardSub);
@@ -182,7 +198,12 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (isInCheck(teamColor) && !hasValidMoves(teamColor)) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     /**
