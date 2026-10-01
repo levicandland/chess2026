@@ -13,7 +13,7 @@ public class ChessGame {
     private ChessBoard copyBoard (ChessBoard original) {
         //make a board
         ChessBoard boardCopy = new ChessBoard();
-        //copy over original to copy
+        //copy over original to the copy
         for (int row = 1; row <= 8; row ++){
             for (int col = 1; col <= 8; col ++){
                 ChessPosition curSqr = new ChessPosition(row, col);
