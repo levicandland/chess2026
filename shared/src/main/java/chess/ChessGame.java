@@ -26,6 +26,44 @@ public class ChessGame {
         return Objects.hash(teamTurn, board);
     }
 
+    private ChessMove enPassant (ChessPosition myPosition){
+        //if there was no last move
+        if (lastMove == null) {
+            return null;
+        }
+        //who's last mover, who's potential en Passer
+        ChessPiece lastMover = board.getPiece(lastMove.getEndPosition());
+        ChessPiece thisPawn = board.getPiece(myPosition);
+        //if lastMover is not Pawn or lasMover is on same team
+        if ((lastMover.getPieceType() != ChessPiece.PieceType.PAWN) || (lastMover.getTeamColor() == thisPawn.getTeamColor())) {
+            return null;
+        }
+        //if the abs value of difference between last moves start and end position is not 2
+        if (Math.abs(lastMove.getStartPosition().getRow() - lastMove.getEndPosition().getRow()) != 2) {
+            return null;
+        }
+        //if they arent on same row
+        if (lastMove.getEndPosition().getRow() != myPosition.getRow()) {
+            return null;
+        }
+        //check side by side
+        if (Math.abs(lastMove.getEndPosition().getColumn() - myPosition.getColumn()) != 1) {
+            return null;
+        }
+        //otherwise move diagonal beyond other pawn and other pawn goes out
+        int enPassantCol = lastMove.getEndPosition().getColumn();
+        int enPassantRow;
+        if (thisPawn.getTeamColor() == TeamColor.WHITE) {
+            enPassantRow = lastMove.getEndPosition().getRow() + 1;
+        }
+        else {
+            enPassantRow = lastMove.getEndPosition().getRow() - 1;
+        }
+        //
+        ChessPosition enPassSqr = new ChessPosition(enPassantRow, enPassantCol);
+        return new ChessMove(myPosition, enPassSqr, null);
+    }
+
     private boolean hasValidMoves (ChessGame.TeamColor teamColor){
         for (int row = 1; row <= 8; row ++){
             for (int col = 1; col <= 8; col ++){
@@ -94,6 +132,7 @@ public class ChessGame {
 
     private TeamColor teamTurn;
     private ChessBoard board;
+    private ChessMove lastMove;
 
     public ChessGame() {
         board = new ChessBoard();
@@ -141,6 +180,14 @@ public class ChessGame {
         }
         //Collect pieces moves
         Collection<ChessMove> possibleMoves = occupant.pieceMoves(board, startPosition);
+        //add in en passant
+        if (occupant.getPieceType().equals(ChessPiece.PieceType.PAWN)) {
+            ChessMove enPassMove = enPassant(startPosition);
+            if (enPassMove != null) {
+                possibleMoves.add(enPassMove);
+            }
+        }
+
         //Collect valid moves
         Collection<ChessMove> legalMoves = new ArrayList <> ();
         //for each move
@@ -177,6 +224,13 @@ public class ChessGame {
         if (!validMoves(move.getStartPosition()).contains(move)) {
             throw new InvalidMoveException("invalid move");
         }
+        //en passant
+        if ((occupant.getPieceType().equals(ChessPiece.PieceType.PAWN))
+                &&( move.getStartPosition().getColumn() != move.getEndPosition().getColumn())
+                &&(board.getPiece(move.getEndPosition()) == null)) {
+            ChessPosition enPassCaptureSqr = new ChessPosition(move.getStartPosition().getRow(), move.getEndPosition().getColumn());
+            board.addPiece(enPassCaptureSqr, null);
+        }
         //vacate start
         board.addPiece(move.getStartPosition(), null);
         //occupy end (with promoPiece if necessary)
@@ -194,6 +248,7 @@ public class ChessGame {
         else {
             setTeamTurn(ChessGame.TeamColor.WHITE);
         }
+        lastMove = move;
     }
 
     /**
