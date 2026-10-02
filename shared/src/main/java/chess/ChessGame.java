@@ -26,6 +26,16 @@ public class ChessGame {
         return Objects.hash(teamTurn, board);
     }
 
+    private void removeEnPassantCapture (ChessMove move, ChessBoard boardSub) {
+        ChessPiece enPassantPredator = boardSub.getPiece(move.getStartPosition());
+        if ((enPassantPredator.getPieceType().equals(ChessPiece.PieceType.PAWN))
+                &&( move.getStartPosition().getColumn() != move.getEndPosition().getColumn())
+                &&(boardSub.getPiece(move.getEndPosition()) == null)) {
+            ChessPosition enPassCaptureSqr = new ChessPosition(move.getStartPosition().getRow(), move.getEndPosition().getColumn());
+            boardSub.addPiece(enPassCaptureSqr, null);
+        }
+    }
+
     private ChessMove enPassant (ChessPosition myPosition){
         //if there was no last move
         if (lastMove == null) {
@@ -194,6 +204,7 @@ public class ChessGame {
         for (ChessMove move : possibleMoves ) {
             //make a copy board to analyse that move
             ChessBoard testBoard = copyBoard(board);
+            removeEnPassantCapture(move, testBoard);
             //start test
             //vacate startPosition
             testBoard.addPiece(move.getStartPosition(), null);
@@ -225,12 +236,7 @@ public class ChessGame {
             throw new InvalidMoveException("invalid move");
         }
         //en passant
-        if ((occupant.getPieceType().equals(ChessPiece.PieceType.PAWN))
-                &&( move.getStartPosition().getColumn() != move.getEndPosition().getColumn())
-                &&(board.getPiece(move.getEndPosition()) == null)) {
-            ChessPosition enPassCaptureSqr = new ChessPosition(move.getStartPosition().getRow(), move.getEndPosition().getColumn());
-            board.addPiece(enPassCaptureSqr, null);
-        }
+        removeEnPassantCapture(move, board);
         //vacate start
         board.addPiece(move.getStartPosition(), null);
         //occupy end (with promoPiece if necessary)
