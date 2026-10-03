@@ -3,6 +3,7 @@ package chess;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.HashSet;
 
 /**
  * A class that can manage a chess game, making moves on a board
@@ -24,6 +25,125 @@ public class ChessGame {
     @Override
     public int hashCode() {
         return Objects.hash(teamTurn, board);
+    }
+
+    private Collection<ChessMove> castlingMoves (ChessPosition myPosition ){
+        //collection for possible castling moves
+        Collection<ChessMove> castleMoves = new ArrayList<>();
+        //make sure king is in starting position
+        ChessPiece king = board.getPiece(myPosition);
+        int homeRow;
+
+        if (king.getTeamColor().equals(ChessGame.TeamColor.WHITE)) {
+            homeRow = 1;
+        }
+        else {
+            homeRow = 8;
+        }
+
+        ChessPosition kingHomeSqr = new ChessPosition(homeRow, 5);
+
+        if (!(myPosition.equals(kingHomeSqr))) {
+            return castleMoves;
+        }
+        //if king has moved
+        if (playedSquares.contains(myPosition)) {
+            return castleMoves;
+        }
+        //if king is in check
+        if (isInCheck(king.getTeamColor())) {
+            return castleMoves;
+        }
+        //Rook checks
+        //Is the king side rook home and unmoved?
+        ChessPosition ksRookSqr = new ChessPosition(homeRow, 8);
+        ChessPiece ksOccupant = board.getPiece(ksRookSqr);
+
+        if ((ksOccupant != null)
+                && (ksOccupant.getPieceType().equals(ChessPiece.PieceType.ROOK))
+                && (ksOccupant.getTeamColor().equals(king.getTeamColor()))
+                && !(playedSquares.contains(ksRookSqr))) {
+            ChessPosition ksSqrOne = new ChessPosition(homeRow, 6);
+            ChessPosition ksSqrTwo = new ChessPosition(homeRow, 7);
+            ChessPiece ksSqrOneOccupant = board.getPiece(ksSqrOne);
+            ChessPiece ksSqrTwoOccupant = board.getPiece(ksSqrTwo);
+
+            if ((ksSqrOneOccupant == null) && (ksSqrTwoOccupant == null)) {
+                //make a copy board to analyse that move
+                ChessBoard testBoard = copyBoard(board);
+                //start test
+                //vacate startPosition
+                testBoard.addPiece(myPosition, null);
+                //occupy endPosition
+                testBoard.addPiece(ksSqrOne, king);
+                //test and validate move
+                if (!(isInCheckHelper(king.getTeamColor(), testBoard))) {
+                    ChessMove ksCastle = new ChessMove(myPosition, ksSqrTwo, null);
+                    castleMoves.add(ksCastle);
+                }
+            }
+        }
+
+        //Is the queen side rook home and unmoved?
+        ChessPosition qsRookSqr = new ChessPosition(homeRow, 1);
+        ChessPiece qsOccupant = board.getPiece(qsRookSqr);
+
+        if ((qsOccupant != null)
+                && (qsOccupant.getPieceType().equals(ChessPiece.PieceType.ROOK))
+                && (qsOccupant.getTeamColor().equals(king.getTeamColor()))
+                && !(playedSquares.contains(qsRookSqr))) {
+            ChessPosition qsSqrOne = new ChessPosition(homeRow, 4);
+            ChessPosition qsSqrTwo = new ChessPosition(homeRow, 3);
+            ChessPosition qsSqrThree = new ChessPosition(homeRow, 2);
+            ChessPiece qsSqrOneOccupant = board.getPiece(qsSqrOne);
+            ChessPiece qsSqrTwoOccupant = board.getPiece(qsSqrTwo);
+            ChessPiece qsSqrThreeOccupant = board.getPiece(qsSqrThree);
+
+            if ((qsSqrOneOccupant == null) && (qsSqrTwoOccupant == null)
+                    && (qsSqrThreeOccupant == null)) {
+                //make a copy board to analyse that move
+                ChessBoard testBoard = copyBoard(board);
+                //start test
+                //vacate startPosition
+                testBoard.addPiece(myPosition, null);
+                //occupy endPosition
+                testBoard.addPiece(qsSqrOne, king);
+                //test and validate move
+                if (!(isInCheckHelper(king.getTeamColor(), testBoard))) {
+                    ChessMove qsCastle = new ChessMove(myPosition, qsSqrTwo, null);
+                    castleMoves.add(qsCastle);
+                }
+            }
+        }
+        return castleMoves;
+    }
+
+    private void moveCastlingRook (ChessMove move, ChessBoard boardSub) {
+        ChessPiece castlingKing = boardSub.getPiece(move.getStartPosition());
+        if ((castlingKing.getPieceType().equals(ChessPiece.PieceType.KING))
+                && (Math.abs(move.getStartPosition().getColumn() - move.getEndPosition().getColumn()) ==  2)) {
+            int rookStartCol;
+            int rookEndCol;
+            //kingside vs queenside  vars
+            if (move.getEndPosition().getColumn() == 7) {
+                rookStartCol = 8;
+                rookEndCol = 6;
+            }
+            else {
+                rookStartCol = 1;
+                rookEndCol = 4;
+            }
+            //rest of vars
+            int castlingRow = move.getStartPosition().getRow();
+            ChessPosition rookStartSqr = new ChessPosition(castlingRow, rookStartCol);
+            ChessPosition rookEndSqr = new ChessPosition(castlingRow, rookEndCol);
+            ChessPiece castlingRook = boardSub.getPiece(rookStartSqr);
+            //move rook
+            //empty startSqr
+            boardSub.addPiece(rookStartSqr, null);
+            //pur rook on castling rook endSqr
+            boardSub.addPiece(rookEndSqr, castlingRook);
+        }
     }
 
     private void removeEnPassantCapture (ChessMove move, ChessBoard boardSub) {
@@ -143,6 +263,7 @@ public class ChessGame {
     private TeamColor teamTurn;
     private ChessBoard board;
     private ChessMove lastMove;
+    private HashSet<ChessPosition> playedSquares = new HashSet<>();
 
     public ChessGame() {
         board = new ChessBoard();
@@ -190,12 +311,16 @@ public class ChessGame {
         }
         //Collect pieces moves
         Collection<ChessMove> possibleMoves = occupant.pieceMoves(board, startPosition);
-        //add in en passant
+        //check and add en passant
         if (occupant.getPieceType().equals(ChessPiece.PieceType.PAWN)) {
             ChessMove enPassMove = enPassant(startPosition);
             if (enPassMove != null) {
                 possibleMoves.add(enPassMove);
             }
+        }
+        //check and add castling
+        if (occupant.getPieceType().equals(ChessPiece.PieceType.KING)) {
+            possibleMoves.addAll(castlingMoves(startPosition));
         }
 
         //Collect valid moves
@@ -205,6 +330,7 @@ public class ChessGame {
             //make a copy board to analyse that move
             ChessBoard testBoard = copyBoard(board);
             removeEnPassantCapture(move, testBoard);
+            moveCastlingRook(move, testBoard);
             //start test
             //vacate startPosition
             testBoard.addPiece(move.getStartPosition(), null);
@@ -237,6 +363,8 @@ public class ChessGame {
         }
         //en passant
         removeEnPassantCapture(move, board);
+        //castling
+        moveCastlingRook(move, board);
         //vacate start
         board.addPiece(move.getStartPosition(), null);
         //occupy end (with promoPiece if necessary)
@@ -247,13 +375,16 @@ public class ChessGame {
         else {
             board.addPiece(move.getEndPosition(), occupant);
         }
-        //Trad turns
+        //Trade turns
         if (teamTurn == ChessGame.TeamColor.WHITE) {
             setTeamTurn(ChessGame.TeamColor.BLACK);
         }
         else {
             setTeamTurn(ChessGame.TeamColor.WHITE);
         }
+        //update trackers
+        playedSquares.add(move.getStartPosition());
+        playedSquares.add(move.getEndPosition());
         lastMove = move;
     }
 
