@@ -24,7 +24,7 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void clearTokenData() throws DataAccessException {
+    public void clearAuthData() throws DataAccessException {
         tokens.clear();
     }
 }
