@@ -5,6 +5,7 @@ import dataaccess.DataAccessException;
 import io.javalin.http.Context;
 import model.AuthData;
 import model.UserData;
+import service.BadRequestException;
 import service.UserService;
 import service.UsernameTakenException;
 
@@ -35,6 +36,10 @@ public class UserHandler {
         catch (UsernameTakenException uTE) {
             ctx.status(403);
             ctx.result(new Gson().toJson(Map.of("message", uTE.getMessage())));
+        }
+        catch (BadRequestException bRE) {
+            ctx.status(400);
+            ctx.result(new Gson().toJson(Map.of("message", bRE.getMessage())));
         }
     }
 

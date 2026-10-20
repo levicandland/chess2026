@@ -18,7 +18,12 @@ public class UserService {
         this.authDAO = authDAO;
     }
 
-    public AuthData register (UserData user) throws DataAccessException, UsernameTakenException {
+    public AuthData register (UserData user) throws DataAccessException, UsernameTakenException, BadRequestException {
+
+        if ((user.username() == null) || (user.password() == null) || (user.email() == null)){
+            throw new BadRequestException("Error: bad request");
+        }
+
         UserData userData = userDAO.getUser(user.username());
 
         if (userData != null) {
