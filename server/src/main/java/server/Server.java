@@ -3,6 +3,7 @@ package server;
 import dataaccess.*;
 import io.javalin.*;
 import service.ClearService;
+import service.UserService;
 
 public class Server {
 
@@ -18,12 +19,17 @@ public class Server {
         AuthDAO myAuthDAO = new MemoryAuthDAO();
         GameDAO myGameDAO = new MemoryGameDAO();
 
-        //create customer and then waiter respectively
+        //create customer and then waiter respectively for clear
         ClearService myClearService = new ClearService(myUserDAO, myAuthDAO, myGameDAO);
         ClearHandler myClearHandler = new ClearHandler(myClearService);
 
-        //instruct restaurant host
+        //create customer and waiter for user requests
+        UserService myUserService = new UserService(myUserDAO, myAuthDAO);
+        UserHandler myUserHandler = new UserHandler(myUserService);
+
+        //instruct restaurant host to send respective requests to right waiter
         javalin.delete("/db", myClearHandler :: clear);
+        javalin.post("/user", myUserHandler :: register);
     }
 
     public int run(int desiredPort) {
