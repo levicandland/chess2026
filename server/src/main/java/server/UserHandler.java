@@ -68,4 +68,23 @@ public class UserHandler {
         }
     }
 
+    public void logout(Context ctx) {
+        try {
+            //store info given from ctx
+            String ctxHeader = ctx.header("authorization");
+            //log that user at(token) out
+            userService.logout(ctxHeader);
+            ctx.status(200);
+            ctx.result("{}");
+        }
+        catch (DataAccessException dAE) {
+            ctx.status(500);
+            ctx.result(new Gson().toJson(Map.of("message", "Error: " + dAE.getMessage())));
+        }
+        catch (UnauthorizedException uE) {
+            ctx.status(401);
+            ctx.result(new Gson().toJson(Map.of("message", uE.getMessage())));
+        }
+    }
+
 }
