@@ -10,6 +10,7 @@ import service.GameService;
 import service.UnauthorizedException;
 import service.UserService;
 
+import java.util.Collection;
 import java.util.Map;
 
 public class GameHandler {
@@ -32,6 +33,30 @@ public class GameHandler {
             //return
             ctx.status(200);
             ctx.result(new Gson().toJson(Map.of("gameID", gameID)));
+        }
+        catch (DataAccessException dAE) {
+            ctx.status(500);
+            ctx.result(new Gson().toJson(Map.of("message", "Error: " + dAE.getMessage())));
+        }
+        catch (BadRequestException bRE) {
+            ctx.status(400);
+            ctx.result(new Gson().toJson(Map.of("message", bRE.getMessage())));
+        }
+        catch (UnauthorizedException uE) {
+            ctx.status(401);
+            ctx.result(new Gson().toJson(Map.of("message", uE.getMessage())));
+        }
+    }
+
+    public void listGames(Context ctx) {
+        try {
+            //store info given from ctx
+            String ctxHeader = ctx.header("authorization");
+            //list games
+            Collection<GameData> gamesList = gameService.listGames(ctxHeader);
+            //return
+            ctx.status(200);
+            ctx.result(new Gson().toJson(Map.of("games", gamesList)));
         }
         catch (DataAccessException dAE) {
             ctx.status(500);

@@ -6,6 +6,8 @@ import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
 
+import java.util.Collection;
+
 public class GameService {
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
@@ -29,6 +31,17 @@ public class GameService {
         }
 
         return gameDAO.createGame(gameName);
+    }
+
+    public Collection<GameData> listGames (String authToken) throws DataAccessException, UnauthorizedException, BadRequestException {
+
+        AuthData authData = authDAO.getAuthToken(authToken);
+
+        if (authData == null) {
+            throw new UnauthorizedException("Error: unauthorized");
+        }
+
+        return gameDAO.listGames();
     }
 
 }
