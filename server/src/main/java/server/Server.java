@@ -30,6 +30,7 @@ public class Server {
         //instruct restaurant host to send respective requests to right waiter
         javalin.delete("/db", myClearHandler :: clear);
         javalin.post("/user", myUserHandler :: register);
+        javalin.post("/session", myUserHandler :: login);
     }
 
     public int run(int desiredPort) {

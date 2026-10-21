@@ -6,6 +6,7 @@ import io.javalin.http.Context;
 import model.AuthData;
 import model.UserData;
 import service.BadRequestException;
+import service.UnauthorizedException;
 import service.UserService;
 import service.UsernameTakenException;
 
@@ -36,6 +37,30 @@ public class UserHandler {
         catch (UsernameTakenException uTE) {
             ctx.status(403);
             ctx.result(new Gson().toJson(Map.of("message", uTE.getMessage())));
+        }
+        catch (BadRequestException bRE) {
+            ctx.status(400);
+            ctx.result(new Gson().toJson(Map.of("message", bRE.getMessage())));
+        }
+    }
+
+    public void login(Context ctx) {
+        try {
+            //store info given from ctx
+            String ctxBody = ctx.body();
+            // turn ctx info into UserData
+            UserData userData = new Gson().fromJson(ctxBody, UserData.class);
+            AuthData authData = userService.login(userData);
+            ctx.status(200);
+            ctx.result(new Gson().toJson(authData));
+        }
+        catch (DataAccessException dAE) {
+            ctx.status(500);
+            ctx.result(new Gson().toJson(Map.of("message", "Error: " + dAE.getMessage())));
+        }
+        catch (UnauthorizedException uE) {
+            ctx.status(401);
+            ctx.result(new Gson().toJson(Map.of("message", uE.getMessage())));
         }
         catch (BadRequestException bRE) {
             ctx.status(400);
