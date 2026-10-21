@@ -5,10 +5,7 @@ import dataaccess.DataAccessException;
 import io.javalin.http.Context;
 import model.GameData;
 import model.UserData;
-import service.BadRequestException;
-import service.GameService;
-import service.UnauthorizedException;
-import service.UserService;
+import service.*;
 
 import java.util.Collection;
 import java.util.Map;
@@ -71,4 +68,6 @@ public class GameHandler {
             ctx.result(new Gson().toJson(Map.of("message", uE.getMessage())));
         }
     }
+
+
 }

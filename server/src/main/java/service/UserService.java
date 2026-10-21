@@ -18,7 +18,7 @@ public class UserService {
         this.authDAO = authDAO;
     }
 
-    public AuthData register (UserData user) throws DataAccessException, UsernameTakenException, BadRequestException {
+    public AuthData register (UserData user) throws DataAccessException, AlreadyTakenException, BadRequestException {
 
         if (((user.username() == null) || (user.password() == null) || (user.email() == null))
         || (user.username().isEmpty() || user.password().isEmpty() || user.email().isEmpty())){
@@ -28,7 +28,7 @@ public class UserService {
         UserData userData = userDAO.getUser(user.username());
 
         if (userData != null) {
-            throw new UsernameTakenException("Error: already taken");
+            throw new AlreadyTakenException("Error: already taken");
         }
 
         userDAO.createUser(user);

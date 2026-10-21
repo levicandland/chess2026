@@ -8,7 +8,7 @@ import model.UserData;
 import service.BadRequestException;
 import service.UnauthorizedException;
 import service.UserService;
-import service.UsernameTakenException;
+import service.AlreadyTakenException;
 
 import java.util.Map;
 
@@ -34,9 +34,9 @@ public class UserHandler {
             ctx.status(500);
             ctx.result(new Gson().toJson(Map.of("message", "Error: " + dAE.getMessage())));
         }
-        catch (UsernameTakenException uTE) {
+        catch (AlreadyTakenException aTE) {
             ctx.status(403);
-            ctx.result(new Gson().toJson(Map.of("message", uTE.getMessage())));
+            ctx.result(new Gson().toJson(Map.of("message", aTE.getMessage())));
         }
         catch (BadRequestException bRE) {
             ctx.status(400);
