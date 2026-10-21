@@ -39,6 +39,7 @@ public class Server {
         javalin.delete("/session", myUserHandler :: logout);
         javalin.post("/game", myGameHandler :: createGame);
         javalin.get("/game", myGameHandler :: listGames);
+        javalin.put("/game", myGameHandler :: joinGame);
     }
 
     public int run(int desiredPort) {
