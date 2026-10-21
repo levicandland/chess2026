@@ -3,6 +3,7 @@ package server;
 import dataaccess.*;
 import io.javalin.*;
 import service.ClearService;
+import service.GameService;
 import service.UserService;
 
 public class Server {
@@ -27,11 +28,16 @@ public class Server {
         UserService myUserService = new UserService(myUserDAO, myAuthDAO);
         UserHandler myUserHandler = new UserHandler(myUserService);
 
+        //create customer and waiter for game requests
+        GameService myGameService = new GameService(myAuthDAO, myGameDAO);
+        GameHandler myGameHandler = new GameHandler(myGameService);
+
         //instruct restaurant host to send respective requests to right waiter
         javalin.delete("/db", myClearHandler :: clear);
         javalin.post("/user", myUserHandler :: register);
         javalin.post("/session", myUserHandler :: login);
         javalin.delete("/session", myUserHandler :: logout);
+        javalin.post("/game", myGameHandler :: createGame);
     }
 
     public int run(int desiredPort) {
