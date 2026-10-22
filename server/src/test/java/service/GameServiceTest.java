@@ -45,4 +45,18 @@ public class GameServiceTest {
     public void listGamesNegative() throws BadRequestException, DataAccessException, AlreadyTakenException {
         assertThrows(UnauthorizedException.class, () -> gameService.listGames("fakeToken"));
     }
+    //joinGame
+    @Test
+    public void joinGamePositive() throws BadRequestException, DataAccessException, AlreadyTakenException, UnauthorizedException {
+        int gameID = gameService.createGame("testToken", "testGameName");
+        gameService.joinGame("testToken", "WHITE", gameID);
+        Collection<GameData> listTestGames = gameService.listGames("testToken");
+        GameData gameJoined = listTestGames.iterator().next();
+        assertEquals("testUsername", gameJoined.whiteUsername());
+    }
+
+    @Test
+    public void joinGameNegative() throws BadRequestException, DataAccessException, AlreadyTakenException {
+        assertThrows(BadRequestException.class, () -> gameService.joinGame("testToken", "WHITE", 999));
+    }
 }
