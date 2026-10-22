@@ -48,5 +48,17 @@ public class UserServiceTest {
         UserData wrongUserData = new UserData("username", "wrongpassword", "email");
         assertThrows(UnauthorizedException.class, () -> userService.login(wrongUserData));
     }
+    //logout
+    @Test
+    public void logoutPositive() throws BadRequestException, DataAccessException, AlreadyTakenException, UnauthorizedException {
+        UserData testUserData = new UserData("username", "password", "email");
+        AuthData authData = userService.register(testUserData);
+        userService.logout(authData.authToken());
+        assertThrows(UnauthorizedException.class, () -> userService.logout(authData.authToken()));
+    }
 
+    @Test
+    public void logoutNegative() {
+        assertThrows(UnauthorizedException.class, () -> userService.logout("fakeToken"));
+    }
 }
