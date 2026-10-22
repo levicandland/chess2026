@@ -5,10 +5,10 @@ import dataaccess.DataAccessException;
 import io.javalin.http.Context;
 import model.AuthData;
 import model.UserData;
+import service.AlreadyTakenException;
 import service.BadRequestException;
 import service.UnauthorizedException;
 import service.UserService;
-import service.AlreadyTakenException;
 
 import java.util.Map;
 

@@ -4,8 +4,10 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import io.javalin.http.Context;
 import model.GameData;
-import model.UserData;
-import service.*;
+import service.AlreadyTakenException;
+import service.BadRequestException;
+import service.GameService;
+import service.UnauthorizedException;
 
 import java.util.Collection;
 import java.util.Map;

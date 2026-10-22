@@ -1,7 +1,7 @@
 package server;
 
 import dataaccess.*;
-import io.javalin.*;
+import io.javalin.Javalin;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
