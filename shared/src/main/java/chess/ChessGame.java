@@ -220,14 +220,13 @@ public class ChessGame {
             for (int col = 1; col <= 8; col ++){
                 ChessPosition canKingEnemy = new ChessPosition(row, col);
                 ChessPiece occupant = boardSub.getPiece(canKingEnemy);
-                if ((occupant != null) && (occupant.getTeamColor() != teamColor)){
+                if ((occupant == null) || (occupant.getTeamColor() == teamColor)) {continue;}
                     Collection<ChessMove> enemyKingThreats = occupant.pieceMoves(boardSub, canKingEnemy);
                     for (ChessMove threat : enemyKingThreats){
                         if (threat.getEndPosition().equals(kingFound)) {
                             return true;
                         }
                     }
-                }
             }
         }
         return false;

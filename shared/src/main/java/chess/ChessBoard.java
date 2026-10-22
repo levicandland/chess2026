@@ -63,7 +63,10 @@ public class ChessBoard {
         //clear board
         pieceAtPosition.clear();
         //create back row setup array
-        ChessPiece.PieceType[] backRowSetUp = {ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.KING, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.ROOK};
+        ChessPiece.PieceType[] backRowSetUp =
+                {ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT,
+                        ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.KING,
+                        ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.ROOK};
         //insert back row setup at rows 1 and 8 keeping in mind that indexing starts at 0 but board starts at 1 (column - 1)
         for (int column = 1; column <= 8; column++) {
             //add back rows

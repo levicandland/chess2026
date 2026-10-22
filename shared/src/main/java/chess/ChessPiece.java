@@ -199,9 +199,12 @@ public class ChessPiece {
 
     }
 
-    private void checkAddPromotions (Collection<ChessMove> moves, ChessPosition start, ChessPosition end, int promotionRow) {
+    private void checkAddPromotions (Collection<ChessMove> moves,
+                                     ChessPosition start, ChessPosition end, int promotionRow) {
         if (end.getRow() == promotionRow) {
-            ChessPiece.PieceType[] pawnPromotionPieces = {ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN};
+            ChessPiece.PieceType[] pawnPromotionPieces =
+                    {ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT,
+                            ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN};
             //promotion
             for (ChessPiece.PieceType promoPiece : pawnPromotionPieces ) {
                 ChessMove pawnPromotion = new ChessMove(start, end, promoPiece);
