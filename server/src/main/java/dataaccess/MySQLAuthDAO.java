@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.AuthData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
 
@@ -25,12 +26,36 @@ public class MySQLAuthDAO implements AuthDAO{
 
     @Override
     public AuthData getAuthToken(String authToken) throws DataAccessException {
+        String getAuthTableContent =
+                "SELECT authToken, username FROM auths WHERE authToken = ?";
+        try (var conn = DatabaseManager.getConnection()) {
+            var preparedStatement = conn.prepareStatement(getAuthTableContent);
+            preparedStatement.setString(1, authToken);
+            var resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return new AuthData(resultSet.getString("authToken"),
+                        resultSet.getString("username")
+                );
+            }
+        }
+        catch (SQLException ex) {
+            throw new DataAccessException("failed to get from authentication token table", ex);
+        }
         return null;
     }
 
     @Override
     public void storeAuthToken(AuthData auth) throws DataAccessException {
-
+        String fillAuthTable = "INSERT INTO auths (authToken, username) VALUES (?, ?)";
+        try (var conn = DatabaseManager.getConnection()) {
+            var preparedStatement = conn.prepareStatement(fillAuthTable);
+            preparedStatement.setString(1, auth.authToken());
+            preparedStatement.setString(2, auth.username());
+            preparedStatement.executeUpdate();
+        }
+        catch (SQLException ex) {
+            throw new DataAccessException("failed to fill authentication token table", ex);
+        }
     }
 
     @Override
