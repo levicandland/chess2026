@@ -2,6 +2,8 @@ package dataaccess;
 
 import model.UserData;
 
+import java.sql.SQLException;
+
 public class MySQLUserDAO implements UserDAO {
 
     public MySQLUserDAO () throws DataAccessException {
@@ -13,6 +15,13 @@ public class MySQLUserDAO implements UserDAO {
                 email VARCHAR(256) NOT NULL,
                 PRIMARY KEY (username)
                 )""";
+        try (var conn = DatabaseManager.getConnection()) {
+            var preparedStatement = conn.prepareStatement(userTableMaker);
+                preparedStatement.executeUpdate();
+        }
+        catch (SQLException ex) {
+            throw new DataAccessException("failed to create user table", ex);
+        }
     }
 
     @Override
