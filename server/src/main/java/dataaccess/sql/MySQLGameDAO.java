@@ -1,18 +1,19 @@
-package dataaccess;
+package dataaccess.sql;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
+import dataaccess.GameDAO;
 import model.GameData;
-import model.UserData;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
-public class MySQLGameDAO implements GameDAO{
+public class MySQLGameDAO implements GameDAO {
 
     private final Gson interpreter =
             new GsonBuilder().enableComplexMapKeySerialization().create();
