@@ -2,6 +2,7 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import model.GameData;
 import model.UserData;
 
@@ -12,6 +13,9 @@ import java.util.Collection;
 import java.util.List;
 
 public class MySQLGameDAO implements GameDAO{
+
+    private final Gson interpreter =
+            new GsonBuilder().enableComplexMapKeySerialization().create();
 
     public MySQLGameDAO () throws DataAccessException {
         DatabaseManager.createDatabase();
@@ -43,7 +47,7 @@ public class MySQLGameDAO implements GameDAO{
             var resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 ChessGame game =
-                        new Gson().fromJson(resultSet.getString("game"), ChessGame.class);
+                        interpreter.fromJson(resultSet.getString("game"), ChessGame.class);
                 gamesList.add(new GameData(resultSet.getInt("gameID"),
                         resultSet.getString("whiteUsername"),
                         resultSet.getString("blackUsername"),
@@ -61,7 +65,7 @@ public class MySQLGameDAO implements GameDAO{
         try (var conn = DatabaseManager.getConnection()) {
             var preparedStatement = conn.prepareStatement(fillGameTable, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, gameName);
-            preparedStatement.setString(2, new Gson().toJson(new ChessGame()));
+            preparedStatement.setString(2, interpreter.toJson(new ChessGame()));
             preparedStatement.executeUpdate();
             var resultSet = preparedStatement.getGeneratedKeys();
             if (resultSet.next()) {
@@ -84,7 +88,7 @@ public class MySQLGameDAO implements GameDAO{
             var resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 ChessGame game =
-                        new Gson().fromJson(resultSet.getString("game"), ChessGame.class);
+                        interpreter.fromJson(resultSet.getString("game"), ChessGame.class);
                 return new GameData(resultSet.getInt("gameID"),
                         resultSet.getString("whiteUsername"),
                         resultSet.getString("blackUsername"),
@@ -105,7 +109,7 @@ public class MySQLGameDAO implements GameDAO{
             preparedStatement.setString(1, game.whiteUsername());
             preparedStatement.setString(2, game.blackUsername());
             preparedStatement.setString(3, game.gameName());
-            preparedStatement.setString(4, new Gson().toJson(game.game()));
+            preparedStatement.setString(4, interpreter.toJson(game.game()));
             preparedStatement.setInt(5, game.gameID());
             preparedStatement.executeUpdate();
         }
