@@ -1,14 +1,16 @@
 package dataaccess.sql;
 
 import chess.ChessGame;
-import dataaccess.*;
+import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
+import dataaccess.UserDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.ClearService;
-import service.UnauthorizedException;
 
 import java.util.Collection;
 
