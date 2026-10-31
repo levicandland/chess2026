@@ -120,12 +120,14 @@ public class MySQLDAOTest {
 
     @Test
     public void getGamePositive() throws DataAccessException {
-
+        int testGameID = myGameDAO.createGame("gameName");
+        GameData gotGame = myGameDAO.getGameData(testGameID);
+        assertEquals("gameName", gotGame.gameName());
     }
 
     @Test
     public void getGameNegative() throws DataAccessException {
-
+        assertNull(myGameDAO.getGameData(999));
     }
 
     @Test
