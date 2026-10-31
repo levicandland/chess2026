@@ -89,12 +89,20 @@ public class MySQLDAOTest {
 
     @Test
     public void deleteAuthPositive() throws DataAccessException {
-
+        AuthData testAuth = new AuthData("authToken", "username");
+        myAuthDAO.storeAuthToken(testAuth);
+        assertNotNull(myAuthDAO.getAuthToken("authToken"));
+        myAuthDAO.deleteAuthToken("authToken");
+        assertNull(myAuthDAO.getAuthToken("authToken"));
     }
 
     @Test
     public void deleteAuthNegative() throws DataAccessException {
-
+        AuthData testAuth = new AuthData("authToken", "username");
+        myAuthDAO.storeAuthToken(testAuth);
+        assertNotNull(myAuthDAO.getAuthToken("authToken"));
+        myAuthDAO.deleteAuthToken("wrongAuthToken");
+        assertNotNull(myAuthDAO.getAuthToken("authToken"));
     }
 
 }
