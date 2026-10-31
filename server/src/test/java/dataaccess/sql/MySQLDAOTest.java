@@ -8,6 +8,9 @@ import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.ClearService;
+import service.UnauthorizedException;
+
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -152,11 +155,15 @@ public class MySQLDAOTest {
 
     @Test
     public void listGamesPositive() throws DataAccessException {
-
+        myGameDAO.createGame("gameNameOne");
+        myGameDAO.createGame("testGameTwo");
+        Collection<GameData> listTestGames = myGameDAO.listGames();
+        assertEquals(2, listTestGames.size());
     }
 
     @Test
     public void listGamesNegative() throws DataAccessException {
-
+        Collection<GameData> listTestGames = myGameDAO.listGames();
+        assertEquals(0, listTestGames.size());
     }
 }
