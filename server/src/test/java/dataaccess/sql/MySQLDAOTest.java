@@ -7,8 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.ClearService;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MySQLDAOTest {
     private ClearService clearService;
@@ -34,6 +33,19 @@ public class MySQLDAOTest {
         assertNull(myUserDAO.getUser("username"));
         assertNull(myAuthDAO.getAuthToken("testToken"));
         assertEquals(0, myGameDAO.listGames().size());
+    }
+
+    @Test
+    public void createUserPositive() throws DataAccessException {
+        myUserDAO.createUser(new UserData("username", "password", "email"));
+        assertNotNull(myUserDAO.getUser("username"));
+    }
+
+    @Test
+    public void createUserNegative() throws DataAccessException {
+        UserData testUserOne = new UserData("username", "password", "email");
+        myUserDAO.createUser(testUserOne);
+        assertThrows(DataAccessException.class, () -> myUserDAO.createUser(testUserOne));
     }
 
 }
