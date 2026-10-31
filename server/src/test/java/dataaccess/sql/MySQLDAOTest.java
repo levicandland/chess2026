@@ -48,4 +48,16 @@ public class MySQLDAOTest {
         assertThrows(DataAccessException.class, () -> myUserDAO.createUser(testUserOne));
     }
 
+    @Test
+    public void getUserPositive() throws DataAccessException {
+        myUserDAO.createUser(new UserData("username", "password", "email"));
+        UserData gotUser = myUserDAO.getUser("username");
+        assertEquals("email", gotUser.email());
+    }
+
+    @Test
+    public void getUserNegative() throws DataAccessException {
+        assertNull(myUserDAO.getUser("missingUsername"));
+    }
+
 }
