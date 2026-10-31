@@ -77,12 +77,14 @@ public class MySQLDAOTest {
 
     @Test
     public void getAuthPositive() throws DataAccessException {
-
+        myAuthDAO.storeAuthToken(new AuthData("authToken", "username"));
+        AuthData gotAuth = myAuthDAO.getAuthToken("authToken");
+        assertEquals("username", gotAuth.username());
     }
 
     @Test
     public void getAuthNegative() throws DataAccessException {
-
+        assertNull(myAuthDAO.getAuthToken("missingAuth"));
     }
 
     @Test
