@@ -1,7 +1,9 @@
 package dataaccess.sql;
 
+import chess.ChessGame;
 import dataaccess.*;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -105,4 +107,44 @@ public class MySQLDAOTest {
         assertNotNull(myAuthDAO.getAuthToken("authToken"));
     }
 
+    @Test
+    public void createGamePositive() throws DataAccessException {
+        int testGameID = myGameDAO.createGame("gameName");
+        assertEquals("gameName", myGameDAO.getGameData(testGameID).gameName());
+    }
+
+    @Test
+    public void createGameNegative() throws DataAccessException {
+        assertThrows(DataAccessException.class, () -> myGameDAO.createGame(null));
+    }
+
+    @Test
+    public void getGamePositive() throws DataAccessException {
+
+    }
+
+    @Test
+    public void getGameNegative() throws DataAccessException {
+
+    }
+
+    @Test
+    public void updateGamePositive() throws DataAccessException {
+
+    }
+
+    @Test
+    public void updateGameNegative() throws DataAccessException {
+
+    }
+
+    @Test
+    public void listGamesPositive() throws DataAccessException {
+
+    }
+
+    @Test
+    public void listGamesNegative() throws DataAccessException {
+
+    }
 }
