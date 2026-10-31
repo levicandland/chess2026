@@ -10,14 +10,12 @@ import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import service.ClearService;
 
 import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MySQLDAOTest {
-    private ClearService clearService;
     private UserDAO myUserDAO;
     private AuthDAO myAuthDAO;
     private GameDAO myGameDAO;
@@ -27,8 +25,9 @@ public class MySQLDAOTest {
         myUserDAO = new MySQLUserDAO();
         myAuthDAO = new MySQLAuthDAO();
         myGameDAO = new MySQLGameDAO();
-        clearService = new ClearService(myUserDAO, myAuthDAO, myGameDAO);
-        clearService.clear();
+        myUserDAO.clearUserData();
+        myAuthDAO.clearAuthData();
+        myGameDAO.clearGameData();
     }
 
     @Test
@@ -36,7 +35,9 @@ public class MySQLDAOTest {
         myUserDAO.createUser(new UserData("username", "password", "email"));
         myAuthDAO.storeAuthToken(new AuthData("testToken", "username"));
         myGameDAO.createGame("gameName");
-        clearService.clear();
+        myUserDAO.clearUserData();
+        myAuthDAO.clearAuthData();
+        myGameDAO.clearGameData();
         assertNull(myUserDAO.getUser("username"));
         assertNull(myAuthDAO.getAuthToken("testToken"));
         assertEquals(0, myGameDAO.listGames().size());
