@@ -60,4 +60,39 @@ public class MySQLDAOTest {
         assertNull(myUserDAO.getUser("missingUsername"));
     }
 
+    @Test
+    public void storeAuthPositive() throws DataAccessException {
+        AuthData testAuth = new AuthData("authToken", "username");
+        myAuthDAO.storeAuthToken(testAuth);
+        assertNotNull(myAuthDAO.getAuthToken("authToken"));
+    }
+
+    @Test
+    public void storeAuthNegative() throws DataAccessException {
+        AuthData testAuth = new AuthData("authToken", "username");
+        myAuthDAO.storeAuthToken(testAuth);
+        assertNotNull(myAuthDAO.getAuthToken("authToken"));
+        assertThrows(DataAccessException.class, () -> myAuthDAO.storeAuthToken(testAuth));
+    }
+
+    @Test
+    public void getAuthPositive() throws DataAccessException {
+
+    }
+
+    @Test
+    public void getAuthNegative() throws DataAccessException {
+
+    }
+
+    @Test
+    public void deleteAuthPositive() throws DataAccessException {
+
+    }
+
+    @Test
+    public void deleteAuthNegative() throws DataAccessException {
+
+    }
+
 }
