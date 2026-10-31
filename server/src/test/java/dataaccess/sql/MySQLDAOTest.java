@@ -132,12 +132,22 @@ public class MySQLDAOTest {
 
     @Test
     public void updateGamePositive() throws DataAccessException {
-
+        int testGameID = myGameDAO.createGame("gameName");
+        GameData testGameData = new GameData(testGameID,
+                "whiteUsername", null,
+                "gameName", new ChessGame());
+        myGameDAO.updateGame(testGameData);
+        GameData thisGame = myGameDAO.getGameData(testGameID);
+        assertEquals("whiteUsername", thisGame.whiteUsername());
     }
 
     @Test
     public void updateGameNegative() throws DataAccessException {
-
+        int testGameID = myGameDAO.createGame("gameName");
+        GameData testGameData = new GameData(testGameID,
+                "whiteUsername", "blackUsername",
+                null, new ChessGame());
+        assertThrows(DataAccessException.class, () -> myGameDAO.updateGame(testGameData));
     }
 
     @Test
