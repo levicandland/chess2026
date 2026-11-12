@@ -46,4 +46,20 @@ public class ServerFacadeTests {
         assertThrows(ResponseException.class, () -> facade.register(user));
     }
 
+    @Test
+    public void loginPositive() throws ResponseException {
+        UserData user = new UserData("username", "password", "email");
+        facade.register(user);
+        AuthData auth = facade.login("username","password");
+        assertNotNull(auth.authToken());
+    }
+
+    @Test
+    public void loginNegative() throws ResponseException {
+        UserData user = new UserData("username", "password", "email");
+        facade.register(user);
+        assertThrows(ResponseException.class, () ->
+                facade.login("username", "wrongPassword"));
+    }
+
 }

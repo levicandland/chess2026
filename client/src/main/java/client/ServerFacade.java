@@ -53,4 +53,24 @@ public class ServerFacade {
             throw new ResponseException("Error: could not reach the server");
         }
     }
+
+    public AuthData login (String username, String password) throws ResponseException {
+        UserData user = new UserData(username, password, null);
+        try {
+            String requestBody = new Gson().toJson(user);
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(URI.create(serverAddress + "/session"))
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody)).build();
+            HttpResponse<String> httpResponse = httpClient.send(httpRequest,
+                    HttpResponse.BodyHandlers.ofString());
+            if (httpResponse.statusCode() != 200) {
+                throw new ResponseException("Error: request failed");
+            }
+            return new Gson().fromJson(httpResponse.body(), AuthData.class);
+        }
+        catch (IOException | InterruptedException ex) {
+            throw new ResponseException("Error: could not reach the server");
+        }
+    }
+
 }
