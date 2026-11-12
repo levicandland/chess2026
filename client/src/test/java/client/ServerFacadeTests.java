@@ -94,4 +94,20 @@ public class ServerFacadeTests {
                 facade.createGame("badToken", "gameName"));
     }
 
+    @Test
+    public void listGamesPositive() throws ResponseException {
+        UserData user = new UserData("username", "password", "email");
+        AuthData auth = facade.register(user);
+        facade.createGame(auth.authToken(), "gameName");
+        assertEquals(1, facade.listGames(auth.authToken()).size());
+    }
+
+    @Test
+    public void listGamesNegative() throws ResponseException {
+        UserData user = new UserData("username", "password", "email");
+        facade.register(user);
+        assertThrows(ResponseException.class, () ->
+                facade.listGames("invalidToken"));
+    }
+
 }

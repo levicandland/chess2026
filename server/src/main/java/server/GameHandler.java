@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dataaccess.DataAccessException;
 import io.javalin.http.Context;
 import model.GameData;
@@ -55,7 +56,8 @@ public class GameHandler {
             Collection<GameData> gamesList = gameService.listGames(ctxHeader);
             //return
             ctx.status(200);
-            ctx.result(new Gson().toJson(Map.of("games", gamesList)));
+            ctx.result(new GsonBuilder().enableComplexMapKeySerialization()
+                    .create().toJson(Map.of("games", gamesList)));
         }
         catch (DataAccessException dAE) {
             ctx.status(500);

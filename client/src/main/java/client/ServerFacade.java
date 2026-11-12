@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Collection;
 
 public class ServerFacade {
 
@@ -78,6 +79,15 @@ public class ServerFacade {
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody)).build();
         String responseBody = sendRequest(httpRequest);
         return new Gson().fromJson(responseBody, GameData.class).gameID();
+    }
+
+    public Collection<GameData> listGames (String authToken) throws ResponseException {
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(serverAddress + "/game"))
+                .header("authorization", authToken)
+                .GET().build();
+        String responseBody = sendRequest(httpRequest);
+        return new Gson().fromJson(responseBody, ListGamesResponse.class).games();
     }
 
 }
