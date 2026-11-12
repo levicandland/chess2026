@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import dataaccess.DataAccessException;
 import io.javalin.http.Context;
 import model.GameData;
+import model.JoinGameRequest;
 import service.AlreadyTakenException;
 import service.BadRequestException;
 import service.GameService;

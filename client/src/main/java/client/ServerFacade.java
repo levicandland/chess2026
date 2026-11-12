@@ -3,6 +3,7 @@ package client;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
+import model.JoinGameRequest;
 import model.UserData;
 
 import java.io.IOException;
@@ -88,6 +89,16 @@ public class ServerFacade {
                 .GET().build();
         String responseBody = sendRequest(httpRequest);
         return new Gson().fromJson(responseBody, ListGamesResponse.class).games();
+    }
+
+    public void joinGame (String authToken, String playerColor, int gameID) throws ResponseException {
+        JoinGameRequest joinGameRequest = new JoinGameRequest(playerColor, gameID);
+        String requestBody = new Gson().toJson(joinGameRequest);
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(serverAddress + "/game"))
+                .header("authorization", authToken)
+                .PUT(HttpRequest.BodyPublishers.ofString(requestBody)).build();
+        sendRequest(httpRequest);
     }
 
 }
