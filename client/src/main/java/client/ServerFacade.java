@@ -73,4 +73,21 @@ public class ServerFacade {
         }
     }
 
+    public void logout (AuthData auth) throws ResponseException {
+        try {
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(URI.create(serverAddress + "/session"))
+                    .header("authorization", auth.authToken())
+                    .DELETE().build();
+            HttpResponse<String> httpResponse = httpClient.send(httpRequest,
+                    HttpResponse.BodyHandlers.ofString());
+            if (httpResponse.statusCode() != 200) {
+                throw new ResponseException("Error: request failed");
+            }
+        }
+        catch (IOException | InterruptedException ex) {
+            throw new ResponseException("Error: could not reach the server");
+        }
+    }
+
 }
