@@ -2,6 +2,7 @@ package client;
 
 import com.google.gson.Gson;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 
 import java.io.IOException;
@@ -66,6 +67,17 @@ public class ServerFacade {
                 .header("authorization", authToken)
                 .DELETE().build();
         sendRequest(httpRequest);
+    }
+
+    public int createGame (String authToken, String gameName) throws ResponseException {
+        GameData game = new GameData(0, null, null, gameName, null);
+        String requestBody = new Gson().toJson(game);
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(serverAddress + "/game"))
+                .header("authorization", authToken)
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody)).build();
+        String responseBody = sendRequest(httpRequest);
+        return new Gson().fromJson(responseBody, GameData.class).gameID();
     }
 
 }
