@@ -16,78 +16,56 @@ public class ServerFacade {
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
+    private String sendRequest (HttpRequest httpRequest) throws ResponseException {
+        try {
+            HttpResponse<String> httpResponse = httpClient.send(httpRequest,
+                    HttpResponse.BodyHandlers.ofString());
+            if (httpResponse.statusCode() != 200) {
+                throw new ResponseException("Error: request failed");
+            }
+            return httpResponse.body();
+        }
+        catch (IOException | InterruptedException ex) {
+            throw new ResponseException("Error: could not reach the server");
+        }
+    }
+
     public ServerFacade (int port) {
         this.serverAddress = "http://localhost:" + port;
     }
 
     public void clear () throws ResponseException {
-        try {
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(serverAddress + "/db"))
-                    .DELETE().build();
-            HttpResponse<String> httpResponse = httpClient.send(httpRequest,
-                    HttpResponse.BodyHandlers.ofString());
-            if (httpResponse.statusCode() != 200) {
-                throw new ResponseException("Error: request failed");
-            }
-        }
-        catch (IOException | InterruptedException ex) {
-            throw new ResponseException("Error: could not reach the server");
-        }
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(serverAddress + "/db"))
+                .DELETE().build();
+        sendRequest(httpRequest);
     }
 
     public AuthData register (UserData user) throws ResponseException {
-        try {
-            String requestBody = new Gson().toJson(user);
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(serverAddress + "/user"))
-                    .POST(HttpRequest.BodyPublishers.ofString(requestBody)).build();
-            HttpResponse<String> httpResponse = httpClient.send(httpRequest,
-                    HttpResponse.BodyHandlers.ofString());
-            if (httpResponse.statusCode() != 200) {
-                throw new ResponseException("Error: request failed");
-            }
-            return new Gson().fromJson(httpResponse.body(), AuthData.class);
-        }
-        catch (IOException | InterruptedException ex) {
-            throw new ResponseException("Error: could not reach the server");
-        }
+        String requestBody = new Gson().toJson(user);
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(serverAddress + "/user"))
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody)).build();
+        String responseBody = sendRequest(httpRequest);
+        return new Gson().fromJson(responseBody, AuthData.class);
     }
 
     public AuthData login (String username, String password) throws ResponseException {
         UserData user = new UserData(username, password, null);
-        try {
-            String requestBody = new Gson().toJson(user);
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(serverAddress + "/session"))
-                    .POST(HttpRequest.BodyPublishers.ofString(requestBody)).build();
-            HttpResponse<String> httpResponse = httpClient.send(httpRequest,
-                    HttpResponse.BodyHandlers.ofString());
-            if (httpResponse.statusCode() != 200) {
-                throw new ResponseException("Error: request failed");
-            }
-            return new Gson().fromJson(httpResponse.body(), AuthData.class);
-        }
-        catch (IOException | InterruptedException ex) {
-            throw new ResponseException("Error: could not reach the server");
-        }
+        String requestBody = new Gson().toJson(user);
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(serverAddress + "/session"))
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody)).build();
+        String responseBody = sendRequest(httpRequest);
+        return new Gson().fromJson(responseBody, AuthData.class);
     }
 
     public void logout (AuthData auth) throws ResponseException {
-        try {
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(URI.create(serverAddress + "/session"))
-                    .header("authorization", auth.authToken())
-                    .DELETE().build();
-            HttpResponse<String> httpResponse = httpClient.send(httpRequest,
-                    HttpResponse.BodyHandlers.ofString());
-            if (httpResponse.statusCode() != 200) {
-                throw new ResponseException("Error: request failed");
-            }
-        }
-        catch (IOException | InterruptedException ex) {
-            throw new ResponseException("Error: could not reach the server");
-        }
+        HttpRequest httpRequest = HttpRequest.newBuilder()
+                .uri(URI.create(serverAddress + "/session"))
+                .header("authorization", auth.authToken())
+                .DELETE().build();
+        sendRequest(httpRequest);
     }
 
 }
