@@ -64,9 +64,8 @@ public class ServerFacadeTests {
     @Test
     public void logoutPositive() throws ResponseException {
         UserData user = new UserData("username", "password", "email");
-        facade.register(user);
-        AuthData auth = facade.login("username","password");
-        assertDoesNotThrow(() -> facade.logout(auth));
+        String authToken = facade.register(user).authToken();
+        assertDoesNotThrow(() -> facade.logout(authToken));
     }
 
     @Test
@@ -75,7 +74,7 @@ public class ServerFacadeTests {
         facade.register(user);
         facade.login("username","password");
         assertThrows(ResponseException.class, () ->
-                facade.logout(new AuthData("wrongAuthToken", "username")));
+                facade.logout("invalidToken"));
     }
 
 }

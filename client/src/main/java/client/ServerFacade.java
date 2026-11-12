@@ -60,10 +60,10 @@ public class ServerFacade {
         return new Gson().fromJson(responseBody, AuthData.class);
     }
 
-    public void logout (AuthData auth) throws ResponseException {
+    public void logout (String authToken) throws ResponseException {
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(serverAddress + "/session"))
-                .header("authorization", auth.authToken())
+                .header("authorization", authToken)
                 .DELETE().build();
         sendRequest(httpRequest);
     }
