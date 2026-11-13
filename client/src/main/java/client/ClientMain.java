@@ -9,9 +9,11 @@ public class ClientMain {
         System.out.println("♕ Welcome 240 Chess Client");
         Scanner scanner = new Scanner(System.in);
         String input = "";
+        ChessClient client = new ChessClient (8080);
         while (!input.equals("quit")){
             System.out.print("[LOGGED_OUT or NOT_REGISTERED]>>> ");
             input = scanner.nextLine();
+            System.out.println(client.eval(input));
         }
     }
 }
