@@ -87,15 +87,32 @@ public class ChessClient {
             Collection<GameData> chessGames = serverFacade.listGames(authToken);
             int gameCounter = 1;
             String output = "";
+            String whitePlayer;
+            String blackPlayer;
             for (GameData chessGame : chessGames) {
                 games.put(gameCounter, chessGame.gameID());
-                output = output + gameCounter + " " + chessGame.gameName() + "\n";
+                whitePlayer = playerInterpreter(chessGame.whiteUsername());
+                blackPlayer = playerInterpreter(chessGame.blackUsername());
+                output = output + gameCounter + " "
+                        + chessGame.gameName()
+                        + ": White-player = " + whitePlayer
+                        + ", Black-player = " + blackPlayer
+                        + "\n";
                 gameCounter += 1;
             }
             return output;
         }
         catch (ResponseException rE) {
             return "list games failed: Try again";
+        }
+    }
+
+    private String playerInterpreter (String teamUsername) {
+        if (teamUsername == null) {
+            return "(empty)";
+        }
+        else {
+            return teamUsername;
         }
     }
 
