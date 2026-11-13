@@ -22,10 +22,24 @@ public class ChessClient {
             }
             AuthData auth = serverFacade.register(new UserData(tokens[1], tokens[2], tokens[3]));
             authToken = auth.authToken();
-            return "Login success. Welcome " + tokens[1];
+            return "registration success. Welcome " + tokens[1];
         }
         catch (ResponseException rE) {
             return "registration failed: The username may already be taken";
+        }
+    }
+
+    private String login (String[] tokens) {
+        try {
+            if (tokens.length != 3) {
+                return "Usage: login <USERNAME> <PASSWORD>";
+            }
+            AuthData auth = serverFacade.login(tokens[1], tokens[2]);
+            authToken = auth.authToken();
+            return "Login success. Welcome " + tokens[1];
+        }
+        catch (ResponseException rE) {
+            return "login failed: Wrong username or password";
         }
     }
 
@@ -37,6 +51,7 @@ public class ChessClient {
         String[] tokens = input.split(" ");
         return switch (tokens[0]) {
             case "register" -> register(tokens);
+            case "login" -> login(tokens);
             case "help" -> help();
             default -> "Unknown command. Type help.";
         };
