@@ -8,10 +8,19 @@ public class ChessClient {
     private ServerFacade serverFacade;
     private String authToken;
 
-    private String help() {
+    private String preHelp() {
         return "register <USERNAME> <PASSWORD> <EMAIL> - create an account\n"
                 + "login <USERNAME> <PASSWORD> - access account\n"
                 + "quit - quit program\n"
+                + "help - get help\n";
+    }
+
+    private String postHelp() {
+        return "create <GAME_NAME> - create a game\n"
+                + "logout - logout of server\n"
+                + "list - list games\n"
+                + "play <GAME_NUMBER> <TEAM_COLOR> - join a game\n"
+                + "observe <GAME_NUMBER> - watch a game\n"
                 + "help - get help\n";
     }
 
@@ -43,18 +52,46 @@ public class ChessClient {
         }
     }
 
+    private String logout () {
+        try {
+            serverFacade.logout(authToken);
+            authToken = null;
+            return "Logout success. Goodbye ";
+        }
+        catch (ResponseException rE) {
+            return "logout failed: Try again";
+        }
+    }
+
     public ChessClient(int port) {
         this.serverFacade = new ServerFacade(port);
     }
 
-    public String eval (String input) {
-        String[] tokens = input.split(" ");
+    public String preloginEval (String[] tokens) {
         return switch (tokens[0]) {
             case "register" -> register(tokens);
             case "login" -> login(tokens);
-            case "help" -> help();
+            case "help" -> preHelp();
             default -> "Unknown command. Type help.";
         };
+    }
+
+    public String postloginEval (String[] tokens) {
+        return switch (tokens[0]) {
+            case "logout" -> logout();
+            case "help" -> postHelp();
+            default -> "Unknown command. Type help.";
+        };
+    }
+
+    public String eval (String input) {
+        String[] tokens = input.split(" ");
+        if (!isLoggedIn()) {
+            return preloginEval(tokens);
+        }
+        else {
+            return postloginEval(tokens);
+        }
     }
 
     public boolean isLoggedIn () {
