@@ -1,8 +1,11 @@
 package client;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import ui.BoardDrawer;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -127,6 +130,26 @@ public class ChessClient {
         }
     }
 
+    private String observe (String[] tokens) {
+        try {
+            if (tokens.length != 2) {
+                return "Usage: play <GAME_NUMBER>";
+            }
+            int gameNumber = Integer.parseInt(tokens[1]);
+            if (!games.containsKey(gameNumber)) {
+                return "Error: game not listed / game does not exist";
+            }
+            //draw board
+            ChessBoard board = new ChessBoard();
+            board.resetBoard();
+            BoardDrawer.drawBoard(board, ChessGame.TeamColor.WHITE);
+            return "Observing game: " + gameNumber;
+        }
+        catch (NumberFormatException nFE) {
+            return "Play game failed: Enter your game number as a digit";
+        }
+    }
+
     private String playerInterpreter (String teamUsername) {
         if (teamUsername == null) {
             return "(empty)";
@@ -156,7 +179,9 @@ public class ChessClient {
             case "create" -> create(tokens);
             case "list" -> list();
             case "play" -> play(tokens);
+            case "observe" -> observe(tokens);
             case "help" -> postHelp();
+            case "quit" -> "Goodbye";
             default -> "Unknown command. Type help.";
         };
     }
