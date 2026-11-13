@@ -41,4 +41,13 @@ public class ChessClient {
             default -> "Unknown command. Type help.";
         };
     }
+
+    public boolean isLoggedIn () {
+        if (authToken != null) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }
