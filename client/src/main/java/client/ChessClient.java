@@ -107,6 +107,26 @@ public class ChessClient {
         }
     }
 
+    private String play (String[] tokens) {
+        try {
+            if (tokens.length != 3) {
+                return "Usage: play <GAME_NUMBER> <TEAM_COLOR>";
+            }
+            int gameNumber = Integer.parseInt(tokens[1]);
+            if (!games.containsKey(gameNumber)) {
+                return "Error: game not listed / game does not exist";
+            }
+            serverFacade.joinGame(authToken, tokens[2].toUpperCase(), games.get(gameNumber));
+            return "Game joined successfully";
+        }
+        catch (ResponseException rE) {
+            return "Play game failed: Try again";
+        }
+        catch (NumberFormatException nFE) {
+            return "Play game failed: Enter your game number as a digit";
+        }
+    }
+
     private String playerInterpreter (String teamUsername) {
         if (teamUsername == null) {
             return "(empty)";
@@ -135,6 +155,7 @@ public class ChessClient {
             case "logout" -> logout();
             case "create" -> create(tokens);
             case "list" -> list();
+            case "play" -> play(tokens);
             case "help" -> postHelp();
             default -> "Unknown command. Type help.";
         };
