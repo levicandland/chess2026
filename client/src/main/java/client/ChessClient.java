@@ -4,10 +4,14 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 
+import java.util.Collection;
+import java.util.HashMap;
+
 public class ChessClient {
 
     private ServerFacade serverFacade;
     private String authToken;
+    private HashMap<Integer, Integer> games = new HashMap<>();
 
     private String preHelp() {
         return "register <USERNAME> <PASSWORD> <EMAIL> - create an account\n"
@@ -77,6 +81,24 @@ public class ChessClient {
         }
     }
 
+    private String list () {
+        try {
+            games.clear();
+            Collection<GameData> chessGames = serverFacade.listGames(authToken);
+            int gameCounter = 1;
+            String output = "";
+            for (GameData chessGame : chessGames) {
+                games.put(gameCounter, chessGame.gameID());
+                output = output + gameCounter + " " + chessGame.gameName() + "\n";
+                gameCounter += 1;
+            }
+            return output;
+        }
+        catch (ResponseException rE) {
+            return "list games failed: Try again";
+        }
+    }
+
     public ChessClient(int port) {
         this.serverFacade = new ServerFacade(port);
     }
@@ -95,6 +117,7 @@ public class ChessClient {
         return switch (tokens[0]) {
             case "logout" -> logout();
             case "create" -> create(tokens);
+            case "list" -> list();
             case "help" -> postHelp();
             default -> "Unknown command. Type help.";
         };
