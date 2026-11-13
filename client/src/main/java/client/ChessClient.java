@@ -1,6 +1,7 @@
 package client;
 
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 
 public class ChessClient {
@@ -31,10 +32,10 @@ public class ChessClient {
             }
             AuthData auth = serverFacade.register(new UserData(tokens[1], tokens[2], tokens[3]));
             authToken = auth.authToken();
-            return "registration success. Welcome " + tokens[1];
+            return "Registration success. Welcome " + tokens[1];
         }
         catch (ResponseException rE) {
-            return "registration failed: The username may already be taken";
+            return "Registration failed: The username may already be taken";
         }
     }
 
@@ -48,7 +49,7 @@ public class ChessClient {
             return "Login success. Welcome " + tokens[1];
         }
         catch (ResponseException rE) {
-            return "login failed: Wrong username or password";
+            return "Login failed: Wrong username or password";
         }
     }
 
@@ -59,7 +60,20 @@ public class ChessClient {
             return "Logout success. Goodbye ";
         }
         catch (ResponseException rE) {
-            return "logout failed: Try again";
+            return "Logout failed: Try again";
+        }
+    }
+
+    private String create (String[] tokens) {
+        try {
+            if (tokens.length != 2) {
+                return "Usage: create <GAME_NAME>";
+            }
+            serverFacade.createGame(authToken, tokens[1]);
+            return "Game created successfully";
+        }
+        catch (ResponseException rE) {
+            return "Create game failed: Try again";
         }
     }
 
@@ -80,6 +94,7 @@ public class ChessClient {
     public String postloginEval (String[] tokens) {
         return switch (tokens[0]) {
             case "logout" -> logout();
+            case "create" -> create(tokens);
             case "help" -> postHelp();
             default -> "Unknown command. Type help.";
         };
