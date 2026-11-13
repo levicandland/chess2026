@@ -72,6 +72,7 @@ public class ChessClient {
             case "register" -> register(tokens);
             case "login" -> login(tokens);
             case "help" -> preHelp();
+            case "quit" -> "Goodbye";
             default -> "Unknown command. Type help.";
         };
     }
