@@ -120,6 +120,15 @@ public class ChessClient {
                 return "Error: game not listed / game does not exist";
             }
             serverFacade.joinGame(authToken, tokens[2].toUpperCase(), games.get(gameNumber));
+            ChessBoard board = new ChessBoard();
+            board.resetBoard();
+            ChessGame.TeamColor teamColor;
+            if (tokens[2].toUpperCase().equals("WHITE")) {
+                teamColor = ChessGame.TeamColor.WHITE;
+            }
+            else { teamColor = ChessGame.TeamColor.BLACK;
+            }
+            BoardDrawer.drawBoard(board, teamColor);
             return "Game joined successfully";
         }
         catch (ResponseException rE) {
